@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura - Sistema de Facturación</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .invoice-header {
+            background: #2c3e50;
+            color: white;
+            padding: 12px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .company-info h1 {
+            font-size: 16px;
+            margin-bottom: 2px;
+            font-weight: 600;
+        }
+
+        .company-info p {
+            font-size: 9px;
+            opacity: 0.9;
+            line-height: 1.2;
+        }
+
+        .invoice-number {
+            text-align: right;
+        }
+
+        .invoice-number h2 {
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .invoice-number p {
+            font-size: 10px;
+            opacity: 0.95;
+        }
+
+        .invoice-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 12px 35px;
+            background: #fafafa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .detail-box h3 {
+            color: #2c3e50;
+            font-size: 9px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .detail-box p {
+            color: #555;
+            font-size: 9px;
+            line-height: 1.3;
+            margin-bottom: 0px;
+        }
+
+        .invoice-content {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 20px;
+            padding: 20px 35px;
+        }
+
+        .table-container {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #2c3e50;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #1a252f;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .items-table thead {
+            background: #2c3e50;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .items-table th {
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .items-table th:last-child,
+        .items-table td:last-child {
+            text-align: right;
+        }
+
+        .items-table tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .items-table td {
+            padding: 10px 8px;
+            color: #555;
+            font-size: 11px;
+        }
+
+        .items-table td:first-child {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .totals-box {
+            background: #fafafa;
+            border-radius: 6px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .totals-box h3 {
+            color: #2c3e50;
+            font-size: 12px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .total-row.subtotal,
+        .total-row.tax {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .total-row.grand-total {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid #2c3e50;
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .invoice-footer {
+            background: #fafafa;
+            padding: 20px 35px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-info {
+            font-size: 10px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .stamp-box {
+            border: 2px solid #2c3e50;
+            padding: 8px 20px;
+            border-radius: 4px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .add-product-section {
+            padding: 10px 35px;
+            background: #f9f9f9;
+            border-top: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .add-product-section h3 {
+            color: #2c3e50;
+            font-size: 9px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1fr 1fr auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 9px;
+            color: #555;
+            margin-bottom: 3px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: inherit;
+            background: white;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2c3e50;
+        }
+
+        .form-group input[readonly] {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .btn-add {
+            padding: 6px 16px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-add:hover {
+            background: #1a252f;
+        }
+
+        .btn-remove {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-remove:hover {
+            background: #c0392b;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .add-product-section {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Encabezado de la factura -->
+        <div class="invoice-header">
+            <div class="company-info">
+                <h1>TechSolutions S.A.</h1>
+                <p>Av. Principal #123, Guayaquil | Tel: +593 4 123-4567 | RUC: 0999999999001</p>
+            </div>
+            <div class="invoice-number">
+                <h2>FACTURA</h2>
+                <p>#FAC-2025-0142</p>
+                <p style="font-size: 11px; margin-top: 3px;">27/10/2025</p>
+            </div>
+        </div>
+
+        <!-- Detalles de facturación -->
+        <div class="invoice-details">
+            <div class="detail-box">
+                <h3>Cliente</h3>
+                <p>Empresa ABC Corp.</p>
+                <p>RUC: 0912345678001</p>
+                <p>Guayaquil, Ecuador</p>
+            </div>
+            <div class="detail-box">
+                <h3>Información</h3>
+                <p>Emisión: 27/10/2025</p>
+                <p>Vencimiento: 10/11/2025</p>
+                <p>Forma de Pago: Transferencia</p>
+            </div>
+        </div>
+
+        <!-- Formulario para agregar productos -->
+        <div class="add-product-section">
+            <h3>Agregar Producto / Servicio</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="producto">Seleccionar Producto/Servicio</label>
+                    <select id="id-select-producto">
+                        <option value="">--Seleccione--</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="cantidad">Cantidad</label>
+                    <input type="number" id="id-txt-cantidad" min="1" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="precio">Precio Unitario</label>
+                    <input type="text" id="id-txt-precio" value="$0.00" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="total">Total</label>
+                    <input type="text" id="id-txt-total" value="$0.00" readonly>
+                </div>
+                <div class="form-group">
+                    <button class="btn-add" id="id-btn-agregar">+ Agregar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="invoice-content">
+            <!-- Tabla de artículos -->
+            <div class="table-container">
+                <table class="items-table" id="id-table-detalle">
+                    <thead>
+                        <tr>
+                            <th>Cod.</th>
+                            <th>Descripción</th>
+                            <th style="width: 80px;">P. Unit.</th>
+                            <th style="width: 60px;">Cant.</th>
+                            <th style="width: 80px;">Total</th>
+                            <th style="width: 50px;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                       <tr>
+                        <td colspan="6" style="text-align-last: center;">No hay productos en la factura</td>
+                       </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Sección de totales -->
+            <div class="totals-box">
+                <h3>Resumen</h3>
+                <div class="total-row subtotal">
+                    <span>Subtotal:</span>
+                    <span id="id-txt-subtotal">$0.00</span>
+                </div>
+                <div class="total-row tax">
+                    <span>IVA (15%):</span>
+                    <span id="id-txt-iva">$0.00</span>
+                </div>
+                <div class="total-row">
+                    <span>Descuento:</span>
+                    <span id="id-txt-descuento">$0.00</span>
+                </div>
+                <div class="total-row grand-total">
+                    <span>TOTAL:</span>
+                    <span id="id-txt-total-pagar">$0.00</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
